@@ -1,7 +1,30 @@
-#from mendeleev import element
+from replit import db
+from re import findall
+
+class Term:
+  def __init__(self, strTerm):
+    #strTerm = 4Fe3CO2
+    splitTerm = findall(r'[A-Z][a-z]+|[A-Z]|\d+', strTerm)
+    debug(splitTerm)
+    fIndex = 0
+    self.elements = []
+    for f in splitTerm:
+      try:
+        int(f)
+        if fIndex == 0:
+          self.co = int(f)
+        else:
+          self.elements[-1][1] = int(f)                          
+      except:
+        self.elements.append([f,1])
+      fIndex+=1
+    debug(self.elements)
+
+class Equation:
+  pass
 def debug(*args):
   if bDebug:
-    print("[DEBUG] " + ''.join(str(arg)+' ' for arg in args))
+    print("[DEBUG] " + ''.join(str(arg) for arg in args))
 bDebug = True
 if bDebug: print("[DEBUG] In debug mode; extra info wil be printed")
 print("Welcome to my Chemistry Calculator!\nFirst, enter your chemical equation. It must be in this specific format:\nFe2O3 + 3CO -> 2Fe + 3CO2 (spaces optional)")
@@ -16,25 +39,8 @@ if strEq == '' and bDebug:
   
 #Check if this is a valid equation, and if so, split it into equal parts
 #ele = {"H":1.01,"He":4.00,"Li":6.94,"Be":9.01,""}
-strEq.strip() #remove whitespace
-e = [[],[]]
+strEq.replace(' ', '')
 reactants = strEq.split("->")[0].split("+")
-rCnt = 0
-for r in reactants:
-  e[0].append([''])
-  currentlyReading = "co"
-  for c in r: #c for character; iterating through string to extact element, coefficients, and subscripts
-    debug("c:",c)
-    if currentlyReading == "co":
-      try:
-        int(c)
-        debug(c)
-        e[0][rCnt][0]+=c
-      except:
-        debug("got to except")
-        e[0][rCnt][0] = 1 if e[0][rCnt][0] == '' else int(e[0][rCnt][0])
-        currentlyReading = "el"
-  debug("e:",e)
-  rCnt+=1
+for r in reactants: Term(r)
 products = strEq.split("->")[1].split("+")
-for p in products: pass
+for p in products: Term(p)
